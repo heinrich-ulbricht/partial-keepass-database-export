@@ -11,7 +11,7 @@ The new database can be protected with a password different from the original da
 # What's the use case?
 You have a giant password database in your secure bunker at home and don't want this database to ever leave your home. But sometimes you need *a few* passwords on the go. What now?
 
-Use this plugin. Mark the passwords you need on the go with a certain tag and take the partial database exported by the plugin with you. If somebody steals this password database he only has a few passwords, not all.
+Use this plugin. Mark the passwords you need on the go with a certain tag and take the partial database exported by the plugin with you. If somebody steals this password database he only has a few passwords, not all. And since the partial database uses a different password an attacker obtaining it cannot open the source database as well.
 
 # Installation
 Download the latest [release](https://github.com/heinrich-ulbricht/partial-keepass-database-export/releases/latest). 
