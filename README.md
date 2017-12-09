@@ -1,5 +1,5 @@
 # Partial KeePass Database Export
-Export tagged entries to a new password database. The new database can use a different password.
+Export tagged entries to a new password database every time you save. The new database can use a different password.
 
 # What does it do?
 Every time you save your database a new database will be created and passwords with certain tags will be copied over (in KeePass you can mark any password entry with tags).
@@ -11,7 +11,7 @@ The new database can be protected with a password different from the original da
 # What's the use case?
 You have a giant password database in your secure bunker at home and don't want this database to ever leave your home. But sometimes you need *a few* passwords on the go. What now?
 
-Use this plugin. Mark the passwords you need on the go with a certain tag and take the partial database exported by the plugin with you. If somebody steals this password database he only has a few passwords, not all. And since the partial database uses a different password an attacker obtaining it cannot open the source database as well.
+Use this plugin. Mark the passwords you need on the go with a certain tag and take the partial database exported by the plugin with you (or upload it to the cloud). If somebody steals this password database he only has a few passwords, not all. And since the partial database uses a different password an attacker obtaining it cannot open the source database as well.
 
 # Installation
 Download the latest [release](https://github.com/heinrich-ulbricht/partial-keepass-database-export/releases/latest). 
