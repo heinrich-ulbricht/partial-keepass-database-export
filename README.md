@@ -1,3 +1,4 @@
+
 # Partial KeePass Database Export
 Export tagged entries to a new password database. The new database can use a different password.
 
@@ -30,5 +31,6 @@ Note: the value of the *clearotp* field doesn't matter and can be empty.
 
 # Limitations
 
+* **the folder structure is not copied** - the exported database will have the root folder containing all exported passwords
 * export to only one file
 * file name and location can not be configured - it's always exported to the same folder as original database, with hardcoded name extension
