@@ -13,6 +13,19 @@ You have a giant password database in your secure bunker at home and don't want 
 
 Use this plugin. Mark the passwords you need on the go with a certain tag and take the partial database exported by the plugin with you. If somebody steals this password database he only has a few passwords, not all.
 
+# Installation
+Download the latest [release](https://github.com/heinrich-ulbricht/partial-keepass-database-export/releases/latest). 
+
+Then:
+1. unzip the file(s)
+1. create a new sub-folder of the KeePass plugins folder, if it doesn't exist (e.g. *KeePass\Plugins\PartialKeePassDatabaseExport* - note: you have to create the sub-folder *PartialKeePassDatabaseExport* when installing the plugin for the first time)
+1. copy the files to this sub-folder
+
+Plugin files that **must** be copied to *KeePass\Plugins\PartialKeePassDatabaseExport* are:
+* PartialKeePassDatabaseExport.dll
+
+Now configure the plugin.
+
 # Configuration
 Create a special password entry with the title *PartialExportConfig* in the root group. The plugin will search for this entry.
 
