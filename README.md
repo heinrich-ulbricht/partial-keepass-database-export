@@ -36,6 +36,16 @@ The tags of this entry are the tags the plugin looks for. Passwords having those
 # Advanced Configuration
 Note: this section assumes you created the special password entry *PartialExportConfig* as described above.
 
+## Set output file path and name (v1.1.0)
+You can use the *URL* field of the *PartialExportConfig* to specify file name and/or path of the exported database file.
+
+Supported values are:
+* absolute pathes (*C:\OneDrive\PartialExport.kdbx*)
+* relative pathes (*Export/PartialExport.kdbx*, *../PartialExport.kdbx*) - they will be resolved relative to the current database
+* no path (*PartialExport.kdbx*) - will export to the directory of the current database
+
+The *kdbx* file extension will be added automatically if missing.
+
 ## Clear *otp* string field
 For the *PartialExportConfig* entry create a string field with name *clearotp* to NOT export the *otp* string field of entries to the new database. The *otp* field is used by the [KeeOtp](https://keepass.info/plugins.html#keeotp) plugin to store the secret key for one-time password generation. If you use other devices to generate one-time passwords you might want to exclude those keys from the exported database to not expose them to attackers.
 
@@ -45,5 +55,4 @@ Note: the value of the *clearotp* field doesn't matter and can be empty.
 
 * **the group/folder structure is not copied** - the exported database will have the root folder containing all exported passwords
 * export to only one file
-* file name and location can not be configured - it's always exported to the same folder as original database, with hardcoded name extension
 * the new database can only be protected by password, not key files or a Windows account
