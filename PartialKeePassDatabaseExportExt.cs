@@ -221,7 +221,17 @@ namespace PartialKeePassDatabaseExport
                         if (exportConfig.ClearTotpStringEntry)
                         {
                             // remove TOTP secret key (when using the https://keepass.info/plugins.html#keeotp plugin)
-                            pwEntryClone.Strings.Remove(Constants.ConfigPwStringName_Otp);
+                            var keyExists = pwEntryClone.Strings.Exists(Constants.ConfigPwStringName_Otp);
+                            if (keyExists)
+                            {
+                                pwEntryClone.Strings.Remove(Constants.ConfigPwStringName_Otp);
+                                var title = pwEntryClone.Strings.Get(PwDefs.TitleField);
+                                // add hint that 2FA key has been removed, but only if title is not empty (that's fishy)
+                                if (!string.IsNullOrEmpty(title.ReadString()))
+                                {
+                                    pwEntryClone.Strings.Set(PwDefs.TitleField, new ProtectedString(title.IsProtected, title.ReadString() + " [2FA removed]"));
+                                }
+                            }
                         }
                         pd.RootGroup.AddEntry(pwEntryClone, true);
                     }
