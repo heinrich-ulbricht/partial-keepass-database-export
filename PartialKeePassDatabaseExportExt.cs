@@ -19,7 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-
+using System.IO;
 using KeePass.Forms;
 using KeePass.Plugins;
 
@@ -73,6 +73,14 @@ namespace PartialKeePassDatabaseExport
             }
         }
 
+        private class ExportConfiguration
+        {
+            public ProtectedString Password { get; set; }
+            public List<string> TagsToExportEntriesFor { get; set; }
+            public bool ClearTotpStringEntry { get; set; }
+            public string ExportFilePath { get; set; }
+        }
+
         private void ExportDatabasePartial(PwDatabase pd)
         {
             if (pd == null) { Debug.Assert(false); return; }
@@ -85,6 +93,7 @@ namespace PartialKeePassDatabaseExport
             if (sl != null)
                 sl.StartLogging("Saving partial database...", true);
 
+            var currentDirectory = Directory.GetCurrentDirectory();
             try
             {
                 var results = new PwObjectList<PwEntry>();
@@ -100,7 +109,48 @@ namespace PartialKeePassDatabaseExport
 
                 try
                 {
-                    ExportToNewDatabase(pd, sl, configPwEntry.Strings.Get(PwDefs.PasswordField), configPwEntry.Tags, configPwEntry.Strings.Exists(Constants.ConfigPwStringName_ClearTotp));
+                    var currentDatabasePath = pd.IOConnectionInfo?.Path;
+                    if (string.IsNullOrEmpty(currentDatabasePath))
+                    {
+                        throw new InvalidDataException("Partial Database Export Plugin error: the current database path is empty. This should never happen.");
+                    }
+                    
+                    // user configured relative export path should be resolved relative to the current database path
+                    Directory.SetCurrentDirectory(UrlUtil.GetFileDirectory(currentDatabasePath, false, false));
+
+                    // check if the user wants to export to certain path
+                    var userConfiguredPath = configPwEntry.Strings.Get(PwDefs.UrlField).ReadString();
+                    var absoluteExportFilePath = UrlUtil.StripExtension(currentDatabasePath) + Constants.ExportFileExtension;
+                    if (!string.IsNullOrEmpty(userConfiguredPath))
+                    {
+                        if (string.IsNullOrEmpty(Path.GetFileName(userConfiguredPath)))
+                        {
+                            // this can happen with trailing slash, e.g. C:\Temp\ => file name is empty; we don't try to be smart but fail
+                            throw new FileNotFoundException("Partial Database Export Plugin error: The file name is empty.");
+                        }
+
+                        absoluteExportFilePath = Path.GetFullPath(userConfiguredPath);
+                        // append file extension if missing or using the wrong one
+                        if (!Path.GetExtension(absoluteExportFilePath).Equals(".kdbx", StringComparison.OrdinalIgnoreCase))
+                        {
+                            absoluteExportFilePath += ".kdbx";
+                        }
+                        // now we have an absolute path to a new database file
+                    }
+                    // prevent overwriting the current database...
+                    if (absoluteExportFilePath.Equals(Path.GetFullPath(currentDatabasePath), StringComparison.OrdinalIgnoreCase))
+                    {
+                        throw new NotSupportedException("Partial Database Export Plugin error: You specified the current database file as the destination for partial export. This is not supported nor wise.");
+                    }
+
+                    var exportSettings = new ExportConfiguration()
+                    {
+                        Password = configPwEntry.Strings.Get(PwDefs.PasswordField),
+                        TagsToExportEntriesFor = configPwEntry.Tags,
+                        ClearTotpStringEntry = configPwEntry.Strings.Exists(Constants.ConfigPwStringName_ClearTotp),
+                        ExportFilePath = absoluteExportFilePath
+                    };
+                    ExportToNewDatabase(pd, sl, exportSettings);
                 }
                 catch (Exception e)
                 {
@@ -110,6 +160,8 @@ namespace PartialKeePassDatabaseExport
             }
             finally
             {
+                // restore original current directory
+                Directory.SetCurrentDirectory(currentDirectory);
                 if (sl != null) sl.EndLogging();
                 mf.SetStatusEx(null);
 
@@ -117,10 +169,10 @@ namespace PartialKeePassDatabaseExport
             }
         }
 
-        public void ExportToNewDatabase(PwDatabase pdOriginal, IStatusLogger slLogger, ProtectedString passwordOfNewDb, List<string> tagsToExportEntriesFor, bool clearTotpKey)
+        private void ExportToNewDatabase(PwDatabase pdOriginal, IStatusLogger slLogger, ExportConfiguration exportConfig)
         {
             var key = new CompositeKey();
-            key.AddUserKey(new KcpPassword(passwordOfNewDb.ReadString()));
+            key.AddUserKey(new KcpPassword(exportConfig.Password.ReadString()));
 
             PwDatabase pd = new PwDatabase();
             pd.New(new IOConnectionInfo(), key);
@@ -155,7 +207,7 @@ namespace PartialKeePassDatabaseExport
                     var foundTag = false;
                     foreach (var tag in pwEntry.Tags)
                     {
-                        if (tagsToExportEntriesFor.Contains(tag))
+                        if (exportConfig.TagsToExportEntriesFor.Contains(tag))
                         {
                             foundTag = true;
                             break;
@@ -166,7 +218,7 @@ namespace PartialKeePassDatabaseExport
                     if (foundTag && pwEntry.Strings.Get(PwDefs.TitleField).ReadString() != Constants.ConfigPwEntryTitle)
                     {
                         var pwEntryClone = pwEntry.CloneDeep();
-                        if (clearTotpKey)
+                        if (exportConfig.ClearTotpStringEntry)
                         {
                             // remove TOTP secret key (when using the https://keepass.info/plugins.html#keeotp plugin)
                             pwEntryClone.Strings.Remove(Constants.ConfigPwStringName_Otp);
@@ -184,7 +236,7 @@ namespace PartialKeePassDatabaseExport
             IOConnectionInfo iocNew = iocOrig.CloneDeep();
             if (string.IsNullOrEmpty(iocNew.Path)) { Debug.Assert(false); }
 
-            iocNew.Path = UrlUtil.StripExtension(iocNew.Path) + Constants.ExportFileExtension;
+            iocNew.Path = exportConfig.ExportFilePath;
             pd.SaveAs(iocNew, false, slLogger);
         }
     }
