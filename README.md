@@ -4,7 +4,7 @@ Export tagged entries to a new password database every time you save. The new da
 # What does it do?
 Every time you save your database a new database will be created and passwords with certain tags will be copied over (in KeePass you can mark any password entry with tags).
 
-The new file is created in the same folder as your database file. If your database file is *passwords.kdbx* the new file will be named *passwords.partial-!readonly!.kdbx*. This file will be overwritten __every time__ you save the original database, so don't make any changes to the copy.
+Without further configuration the new file is created in the same folder as your database file. If your database file is *passwords.kdbx* the new file will be named *passwords.partial-!readonly!.kdbx*. This file will be overwritten __every time__ you save the original database, so don't make any changes to the copy. Note: as of v1.0.0 you can change output path and file name. The same reasoning applies, make sure to not overwrite existing files.
 
 The new database can be protected with a password different from the original database's one. Key files and Windows account are not supported.
 
