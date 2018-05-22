@@ -56,3 +56,14 @@ Note: the value of the *clearotp* field doesn't matter and can be empty.
 * **the group/folder structure is not copied** - the exported database will have the root folder containing all exported passwords
 * export to only one file
 * the new database can only be protected by password, not key files or a Windows account
+
+# Partial KeePass Database Export vs KeePassSubsetExport
+
+There is another plugin [KeePassSubsetExport](https://github.com/lukeIam/KeePassSubsetExport) out there, apparently developed in parallel, that does at least the same as my plugin. Have a look at the comparison [here](https://github.com/lukeIam/KeePassSubsetExport#keepasssubsetexport-vs-partial-keepass-database-export).
+
+So here are the advantages of my Partial KeePass Database Export:
+
+* the otp string field can be cleared, protecting your two-factor authentication secrets
+* simplicity ;)
+
+The other plugin looks good. Have a look and decide for yourself.
