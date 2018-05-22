@@ -64,6 +64,7 @@ There is another plugin [KeePassSubsetExport](https://github.com/lukeIam/KeePass
 So here are the advantages of my Partial KeePass Database Export:
 
 * the otp string field can be cleared, protecting your two-factor authentication secrets
+* flat export without folders - some users see this as advantage
 * simplicity ;)
 
 The other plugin looks good. Have a look and decide for yourself.
