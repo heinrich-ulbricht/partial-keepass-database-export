@@ -67,4 +67,4 @@ So here are the advantages of my Partial KeePass Database Export:
 * flat export without folders - some users see this as advantage
 * simplicity ;)
 
-The other plugin looks good. Have a look and decide for yourself.
+Try and decide for yourself.
